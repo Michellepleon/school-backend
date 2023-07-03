@@ -1,0 +1,73 @@
+openapi: 3.0.0
+info:
+  title: Example API
+  description: This is an example API using Swagger
+  version: 1.0.0
+
+paths:
+  /users:
+    post:
+      summary: Create a user
+      operationId: createUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserCreateRequest"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+
+components:
+  schemas:
+    UserCreateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+          pattern: ^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$
+        age:
+          type: integer
+          minimum: 18
+        address:
+          type: object
+          properties:
+            street:
+              type: string
+            city:
+              type: string
+        isSubscribed:
+          type: boolean
+        phoneNumber:
+          type: string
+          pattern: ^\+?[0-9]{1,3}-?[0-9]{3,}-?[0-9]{4,}$
+
+    UserResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+        age:
+          type: integer
+        address:
+          type: object
+          properties:
+            street:
+              type: string
+            city:
+              type: string
+        isSubscribed:
+          type: boolean
+        phoneNumber:
+          type: string

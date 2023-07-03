@@ -3,28 +3,29 @@
 //------------------------------------------------------------------------------
 const express = require("express");
 const sqlite3 = require("sqlite3").verbose();
-const path = require("path");
-const fs = require("fs");
 const app = express();
+
 app.use(express.json());
-app.use(express.urlencoded());
-const port = 9000;
+
+//app.use(express.urlencoded());
+const port = 8080;
 //------------------------------------------------------------------------------
 // DATABASE FUNCTIONS
 //------------------------------------------------------------------------------
 // Initialize dataBase connection on dataBase.db with SQLite3
 function openDataBaseConnection() {
-  let dataBase = new sqlite3.Database(
-    path.join(__dirname + "/data/dataBase.db"),
-    "OPEN_READWRITE | OPEN_CREATE",
-    (error) => {
-      if (error) {
-        return console.error(error.message);
+  const db = new sqlite3.Database(
+    "data/students.db",
+    sqlite3.OPEN_READWRITE,
+    (err) => {
+      if (err) {
+        console.error(err.message);
+      } else {
+        console.log("Connected to the SQLite database.");
       }
-      console.log("Connected to the dataBase.db SQlite database.");
     }
   );
-  return dataBase;
+  return db;
 }
 
 function closeDataBaseConnection(dataBase) {
@@ -36,21 +37,12 @@ function closeDataBaseConnection(dataBase) {
   });
 }
 
-function createDataBaseTable(dataBase) {
+//------------------------------------------------------------------------------
+// CREATE A DATA BASE
+//------------------------------------------------------------------------------
+function createStudentsTable(dataBase) {
   dataBase.run(
-    "CREATE TABLE IF NOT EXISTS Students(id INTEGER PRIMARY KEY AUTOINCREMENT, firstName text, lastName text, sex text, age integer)"
-  );
-}
-
-function insertIntoDataBaseTable(dataBase, newObjectData) {
-  dataBase.run(
-    `INSERT INTO Students(firstName, lastName,  sex, age) VALUES(?,?,?,?)`,
-    [
-      newObjectData.firstName,
-      newObjectData.lastName,
-      newObjectData.sex,
-      newObjectData.age,
-    ]
+    "CREATE TABLE IF NOT EXISTS students(id integer PRIMARY KEY AUTOINCREMENT, firstName text, lastName text, sex text, age integer)"
   );
 }
 //------------------------------------------------------------------------------
@@ -64,30 +56,76 @@ app.listen(port, () => {
 //------------------------------------------------------------------------------
 // create dataBase, connect to it and then create a Students table inside of it
 const dataBase = openDataBaseConnection();
-createDataBaseTable(dataBase);
+createStudentsTable(dataBase);
+closeDataBaseConnection(dataBase);
 //------------------------------------------------------------------------------
 // Endpoints management
 //------------------------------------------------------------------------------
 app.post("/student", (request, response) => {
-  // Process your data and perform any necessary operations
-  const requestBody = request.body;
+  const dataBase = openDataBaseConnection();
+  const { firstName, lastName, age, sex } = request.body;
+  const query =
+    "INSERT INTO students (firstName, lastName, age, sex) VALUES (?, ?, ?, ?);";
+  const values = [firstName, lastName, age, sex];
 
-  console.log("A new student as been added!");
-
-  insertIntoDataBaseTable(dataBase, requestBody);
-  // Create the response object
-  const responseBody = {
-    message: "Created successfully",
-    data: requestBody,
-  };
-
-  // Send the response with HTTP code 201 and the JSON body
-  response.status(201).json(responseBody);
+  dataBase.run(query, values, function (err) {
+    if (err) {
+      console.error(err.message);
+      response.status(500).json({ error: "Error creating student" });
+    } else {
+      const studentId = this.lastID;
+      const createdStudent = {
+        studentId,
+        firstName,
+        lastName,
+        age,
+        sex,
+      };
+      response.status(200).json({
+        message: "Student created successfully",
+        student: createdStudent,
+      });
+      console.log("A new student has been added:", createdStudent);
+    }
+    // Close the database connection after the operation is completed
+    closeDataBaseConnection(dataBase);
+  });
 });
 
 app.get("/students", (request, response) => {
-  const responseBody = response.body;
+  const dataBase = openDataBaseConnection();
+  const query = "SELECT * FROM students";
 
-  console.log("Here's the full list of students we got!");
-  response.sendStatus(200);
+  dataBase.all(query, (err, rows) => {
+    if (err) {
+      console.error(err.message);
+      response.status(500).json({ error: "Error retrieving students" });
+    } else {
+      response.json(rows);
+      console.log("Here's the full list of students we got!");
+    }
+    // Close the database connection after the operation is completed
+    closeDataBaseConnection(dataBase);
+  });
+});
+
+app.delete("/student/:id", (request, response) => {
+  const dataBase = openDataBaseConnection();
+  const student = student.find((c) => c.Id === parseInt(request.params.Id));
+  if (!student) return response.status(404).send("Student not found");
+
+  const index = student.indexOf(student);
+  student.splice(index, 1);
+  response.send(student);
+});
+//------------------------------------------------------------------------------
+// Close the database connection when the server is shutting down
+process.on("SIGINT", () => {
+  closeDataBaseConnection(dataBase);
+  process.exit();
+});
+
+process.on("SIGTERM", () => {
+  closeDataBaseConnection(dataBase);
+  process.exit();
 });
