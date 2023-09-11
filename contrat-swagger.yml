@@ -1,73 +1,551 @@
 openapi: 3.0.0
 info:
-  title: Example API
-  description: This is an example API using Swagger
+  title: Students API
+  description: Manage interaction between database and frontend application
   version: 1.0.0
 
 paths:
-  /users:
+  /students:
+    get:
+      summary: Get all students from database
+      tags:
+        - End points
+      operationId: getStudents
+      responses:
+        "200":
+          description: OK, returned all the students in database
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/getStudentsResponseBody200"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/getStudentsResponseBody400"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/getStudentsResponseBody404"
+
+  /student:
     post:
-      summary: Create a user
-      operationId: createUser
+      summary: Add a new student to database and autoincrement the id
+      tags:
+        - End points
+      operationId: getStudents
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UserCreateRequest"
+              $ref: "#/components/schemas/postStudentRequestBody"
       responses:
-        "200":
-          description: OK
+        "201":
+          description: Created, new student as been added to database
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/UserResponse"
+                $ref: "#/components/schemas/postStudentResponseBody201"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/postStudentResponseBody400"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/postStudentResponseBody500"
 
+  /studentId:
+    delete:
+      summary: Delete an student from the database
+      tags:
+        - End points
+      operationId: deleteStudent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/deleteStudentIdRequestBody"
+      responses:
+        "200":
+          description: Student has been deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/deleteStudentIdResponseBody200"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/deleteStudentIdResponseBody404"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/deleteStudentIdResponseBody500"
+
+  /studentId/firstName:
+    put:
+      summary: Update firstName student by Id
+      tags:
+        - End points
+      operationId: putFirstNameStudent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/putFirstNameStudentRequestBody"
+      responses:
+        "201":
+          description: firstName of student has been updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/putFirstNameStudentResponseBody201"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/putFirstNameStudentResponseBody404"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/putFirstNameStudentResponseBody500"
+
+  /studentId/lastName:
+    put:
+      summary: Update lastName student by Id
+      tags:
+        - End points
+      operationId: putlastNameStudent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/putLastNameStudentRequestBody"
+      responses:
+        "201":
+          description: LastName of student has been updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/putLastNameStudentResponseBody201"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/putLastNameStudentResponseBody404"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/putLastNameStudentResponseBody500"
+
+  /studentId/age:
+    put:
+      summary: Update age of student by Id
+      tags:
+        - End points
+      operationId: putAgeStudent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/putAgeStudentRequestBody"
+      responses:
+        "201":
+          description: Age of student has been updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/putAgeStudentResponseBody201"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/putAgeStudentResponseBody404"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/putAgeStudentResponseBody500"
+
+  /studentId/sex:
+    put:
+      summary: Update sex of student by Id
+      tags:
+        - End points
+      operationId: putSexStudent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/putSexStudentRequestBody"
+      responses:
+        "201":
+          description: Age of student has been updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/putSexStudentResponseBody201"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/putSexStudentResponseBody404"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/putSexStudentResponseBody500"
+x-tagGroups:
+  - name: End points
+    tags:
+       - End points
+################################################################################
+# SCHEMAS
+################################################################################
 components:
-  schemas:
-    UserCreateRequest:
-      type: object
-      properties:
-        name:
-          type: string
-        email:
-          type: string
-          pattern: ^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$
-        age:
-          type: integer
-          minimum: 18
-        address:
-          type: object
-          properties:
-            street:
-              type: string
-            city:
-              type: string
-        isSubscribed:
-          type: boolean
-        phoneNumber:
-          type: string
-          pattern: ^\+?[0-9]{1,3}-?[0-9]{3,}-?[0-9]{4,}$
+   schemas:
+      ##########################################################################
+      # GET /students
+      ##########################################################################
+      getStudentsResponseBody200:
+        type: object
+        properties:
+          firstName:
+            type: string
+            minimum: 3
+            maximum: 30
+          lastName:
+            type: string
+            minimum: 3
+            maximum: 30
+          age:
+            type: integer
+            minimum: 1
+            maximum: 3
+          sex:
+            type: string
+            minimum: 1
+            maximum: 10
 
-    UserResponse:
-      type: object
-      properties:
-        id:
-          type: integer
-        name:
-          type: string
-        email:
-          type: string
-        age:
-          type: integer
-        address:
-          type: object
-          properties:
-            street:
-              type: string
-            city:
-              type: string
-        isSubscribed:
-          type: boolean
-        phoneNumber:
-          type: string
+      getStudentsResponseBody400:
+        type: object
+        properties:
+          firstName:
+            type: string
+            minimum: 3
+            maximum: 30
+          lastName:
+            type: string
+            minimum: 3
+            maximum: 30
+          age:
+            type: integer
+            minimum: 1
+            maximum: 3
+          sex:
+            type: string
+            minimum: 1
+            maximum: 10
+
+      getStudentsResponseBody404:
+        type: object
+        properties:
+          firstName:
+            type: string
+            minimum: 3
+            maximum: 30
+          lastName:
+            type: string
+            minimum: 3
+            maximum: 30
+          age:
+            type: integer
+            minimum: 1
+            maximum: 3
+          sex:
+            type: string
+            minimum: 1
+            maximum: 10
+      ##########################################################################
+      # POST /student
+      ##########################################################################
+      postStudentRequestBody:
+        type: object
+        properties:
+          firstName:
+            type: string
+            minimum: 3
+            maximum: 30
+          lastName:
+            type: string
+            minimum: 3
+            maximum: 30
+          age:
+            type: integer
+            minimum: 1
+            maximum: 3
+          sex:
+            type: string
+            minimum: 1
+            maximum: 10
+
+      postStudentResponseBody201:
+        type: object
+        properties:
+          firstName:
+            type: string
+            minimum: 3
+            maximum: 30
+          lastName:
+            type: string
+            minimum: 3
+            maximum: 30
+          age:
+            type: integer
+            minimum: 1
+            maximum: 3
+          sex:
+            type: string
+            minimum: 1
+            maximum: 10
+
+      postStudentResponseBody400:
+        type: object
+        properties:
+          firstName:
+            type: string
+            minimum: 3
+            maximum: 30
+          lastName:
+            type: string
+            minimum: 3
+            maximum: 30
+          age:
+            type: integer
+            minimum: 1
+            maximum: 3
+          sex:
+            type: string
+            minimum: 1
+            maximum: 10
+
+      postStudentResponseBody500:
+        type: object
+        properties:
+          firstName:
+            type: string
+            minimum: 3
+            maximum: 30
+          lastName:
+            type: string
+            minimum: 3
+            maximum: 30
+          age:
+            type: integer
+            minimum: 1
+            maximum: 3
+          sex:
+            type: string
+            minimum: 1
+            maximum: 10
+      ##########################################################################
+      # DELETE /studentId
+      ##########################################################################
+      deleteStudentIdRequestBody:
+        type: object
+        properties:
+          firstName:
+            type: string
+            minimum: 3
+            maximum: 30
+          lastName:
+            type: string
+            minimum: 3
+            maximum: 30
+          age:
+            type: integer
+            minimum: 1
+            maximum: 3
+          sex:
+            type: string
+            minimum: 1
+            maximum: 10
+
+      deleteStudentIdResponseBody200:
+        type: object
+        properties:
+          message:
+            type: string
+          student:
+            type: string
+
+      deleteStudentIdResponseBody404:
+        type: object
+        properties:
+          message:
+            type: string
+
+      deleteStudentIdResponseBody500:
+        type: object
+        properties:
+          message:
+            type: string
+
+      ###########################################################################
+      # PUT /studentId?firstName={firstName}
+      ############################################################################
+      putFirstNameStudentRequestBody:
+        type: object
+        properties:
+          firstName:
+            type: string
+            minimum: 3
+            maximum: 30
+
+      putFirstNameStudentResponseBody201:
+        type: object
+        properties:
+          message:
+            type: string
+          firstName:
+            type: string
+            minimum: 3
+            maximum: 30
+
+      putFirstNameStudentResponseBody404:
+        type: object
+        properties:
+          message:
+            type: string
+
+      putFirstNameStudentResponseBody500:
+        type: object
+        properties:
+          message:
+            type: string
+
+      ###########################################################################
+      # PUT /studentId?lastName={lastName}
+      ############################################################################
+      putLastNameStudentRequestBody:
+        type: object
+        properties:
+          lastName:
+            type: string
+            minimum: 3
+            maximum: 30
+
+      putLastNameStudentResponseBody201:
+        type: object
+        properties:
+          message:
+            type: string
+          lastName:
+            type: string
+            minimum: 3
+            maximum: 30
+
+      putLastNameStudentResponseBody404:
+        type: object
+        properties:
+          message:
+            type: string
+
+      putLastNameStudentResponseBody500:
+        type: object
+        properties:
+          message:
+            type: string
+
+      ###########################################################################
+      # PUT /studentId?Age={age}
+      ############################################################################
+      putAgeStudentRequestBody:
+        type: object
+        properties:
+          age:
+            type: integer
+            minimum: 1
+            maximum: 3
+
+      putAgeStudentResponseBody201:
+        type: object
+        properties:
+          message:
+            type: string
+          age:
+            type: integer
+            minimum: 1
+            maximum: 3
+
+      putAgeStudentResponseBody404:
+        type: object
+        properties:
+          message:
+            type: string
+
+      putAgeStudentResponseBody500:
+        type: object
+        properties:
+          message:
+            type: string
+
+      ###########################################################################
+      # PUT /studentId?Sex={sex}
+      ############################################################################
+      putSexStudentRequestBody:
+        type: object
+        properties:
+          sex:
+            type: string
+            minimum: 1
+            maximum: 10
+
+      putSexStudentResponseBody201:
+        type: object
+        properties:
+          message:
+            type: string
+          sex:
+            type: string
+            minimum: 1
+            maximum: 10
+
+      putSexStudentResponseBody404:
+        type: object
+        properties:
+          message:
+            type: string
+
+      putSexStudentResponseBody500:
+        type: object
+        properties:
+          message:
+            type: string

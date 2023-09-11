@@ -1,1 +1,1 @@
-# school-backend
+# Fullstack-School
